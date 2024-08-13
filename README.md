@@ -14,11 +14,12 @@ mj git repo for testing
 
     - name: Print specific fact (e.g., OS distribution)
       debug:
-        msg: "The OS distribution is: {{ ansible_facts['ansible_distribution'] }}"
+        msg: "The OS distribution is: {{ ansible_facts['distribution'] }}"
 
     - name: Print specific fact (e.g., Hostname)
       debug:
-        msg: "The hostname is: {{ ansible_facts['ansible_hostname'] }}"
+        msg: "The hostname is: {{ ansible_facts['hostname'] }}"
+
 
 
 
