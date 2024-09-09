@@ -101,3 +101,16 @@ mj git repo for testing
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
     tags: 'install'
+
+
+
+
+
+
+
+
+root@rdmlixjmp06:/etc/raddb# cat server
+# Autoconfigured by ping time
+#AuthGateway.cso.att.com Nost1k 30
+authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+
