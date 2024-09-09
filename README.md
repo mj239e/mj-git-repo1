@@ -2,6 +2,7 @@
 mj git repo for testing
 
 
+
 ---
 - hosts: all
   become: yes
@@ -39,6 +40,20 @@ mj git repo for testing
       - ansible_distribution_major_version == '20' or
         ansible_distribution_major_version == '22'
     tags: 'install'
+
+  - name: "Update /etc/raddb/server file on Ubuntu"
+    copy:
+      dest: /etc/raddb/server
+      content: |
+        # Autoconfigured by ping time
+        #AuthGateway.cso.att.com Nost1k 30
+        authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+    when:
+      - ansible_distribution == 'Ubuntu'
+      - ansible_distribution_major_version == '20' or
+        ansible_distribution_major_version == '22'
+    tags: 'update_raddb'
+
 #===================================================================================================================================
 # RedHat/CentOS 7
 #===================================================================================================================================
@@ -70,10 +85,23 @@ mj git repo for testing
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
     tags: 'install'
+
+  - name: "Update /etc/raddb/server file on RedHat7"
+    copy:
+      dest: /etc/raddb/server
+      content: |
+        # Autoconfigured by ping time
+        #AuthGateway.cso.att.com Nost1k 30
+        authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '7'
+    tags: 'update_raddb'
+
 #===================================================================================================================================
 # RedHat/CentOS 8
 #===================================================================================================================================
-  - name: "Download 'pam_radius_auth_cbb-1.4.4-1.el7.x86_64.rpm' to '/tmp' when OS is RedHat8 based"
+  - name: "Download 'pam_radius_auth_cbb-1.4.4-1.el8.x86_64.rpm' to '/tmp' when OS is RedHat8 based"
     ansible.builtin.get_url:
       url: https://mirrors.it.att.com/pub/custom/SD/nasInstall/radius/mfa/pam_radius_auth_cbb-1.4.4-1.el8.x86_64.rpm
       dest: /tmp
@@ -102,15 +130,15 @@ mj git repo for testing
       - ansible_distribution_major_version == '8'
     tags: 'install'
 
-
-
-
-
-
-
-
-root@rdmlixjmp06:/etc/raddb# cat server
-# Autoconfigured by ping time
-#AuthGateway.cso.att.com Nost1k 30
-authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+  - name: "Update /etc/raddb/server file on RedHat8"
+    copy:
+      dest: /etc/raddb/server
+      content: |
+        # Autoconfigured by ping time
+        #AuthGateway.cso.att.com Nost1k 30
+        authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
+    tags: 'update_raddb'
 
