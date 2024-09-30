@@ -5,44 +5,44 @@
   tasks:
 
 #===================================================================================================================================
-# Ubuntu 22 - Installation
+# Ubuntu 20 & 22 - Installation
 #===================================================================================================================================
-  - name: "Download 'attradius-cbb_4.5_amd64.deb' to '/tmp' when OS is Ubuntu 22"
+  - name: "Download 'attradius-cbb_4.5_amd64.deb' to '/tmp' when OS is Ubuntu 20 or 22"
     ansible.builtin.get_url:
       url: https://mirrors.it.att.com/pub/custom/SD/nasInstall/radius/mfa/attradius-cbb_4.5_amd64.deb
       dest: /tmp
       force: true
     when:
       - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_major_version == '22'
-    tags: ['ubuntu22', 'install']
+      - ansible_distribution_major_version in ['20', '22']
+    tags: ['ubuntu20', 'ubuntu22', 'install']
 
-  - name: "Check '/tmp/attradius-cbb_4.5_amd64.deb' exists when OS is Ubuntu 22"
+  - name: "Check '/tmp/attradius-cbb_4.5_amd64.deb' exists when OS is Ubuntu 20 or 22"
     stat:
       path: /tmp/attradius-cbb_4.5_amd64.deb
     register: attradius
     failed_when:
       - ansible_distribution == 'Ubuntu' and not attradius.stat.exists
-    tags: ['ubuntu22', 'install']
+    tags: ['ubuntu20', 'ubuntu22', 'install']
 
-  - name: "Install 'attradius-cbb_4.5_amd64.deb' package when OS is Ubuntu 22"
+  - name: "Install 'attradius-cbb_4.5_amd64.deb' package when OS is Ubuntu 20 or 22"
     ansible.builtin.apt:
       deb: /tmp/attradius-cbb_4.5_amd64.deb
     when:
       - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_major_version == '22'
-    tags: ['ubuntu22', 'install']
+      - ansible_distribution_major_version in ['20', '22']
+    tags: ['ubuntu20', 'ubuntu22', 'install']
 
-  - name: "Remove 'attradius-cbb_4.5_amd64.deb' from '/tmp' when OS is Ubuntu 22"
+  - name: "Remove 'attradius-cbb_4.5_amd64.deb' from '/tmp' when OS is Ubuntu 20 or 22"
     ansible.builtin.file:
       path: /tmp/attradius-cbb_4.5_amd64.deb
       state: absent
     when:
       - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_major_version == '22'
-    tags: ['ubuntu22', 'cleanup']
+      - ansible_distribution_major_version in ['20', '22']
+    tags: ['ubuntu20', 'ubuntu22', 'cleanup']
 
-  - name: "Update /etc/raddb/server file on Ubuntu 22"
+  - name: "Update /etc/raddb/server file on Ubuntu 20 or 22"
     copy:
       dest: /etc/raddb/server
       content: |
@@ -50,21 +50,21 @@
         authgtwy-cbb-uat.is.tci.att.com Nost1k 30
     when:
       - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_major_version == '22'
-    tags: ['ubuntu22', 'update_raddb']
+      - ansible_distribution_major_version in ['20', '22']
+    tags: ['ubuntu20', 'ubuntu22', 'update_raddb']
 
 #===================================================================================================================================
-# Ubuntu 22 - Removal
+# Ubuntu 20 & 22 - Removal
 #===================================================================================================================================
-  - name: "Purge 'attradius-cbb_4.5_amd64.deb' package on Ubuntu 22"
+  - name: "Purge 'attradius-cbb_4.5_amd64.deb' package on Ubuntu 20 or 22"
     command: dpkg --purge attradius-cbb
     when:
       - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_major_version == '22'
-    tags: ['ubuntu22', 'remove']
+      - ansible_distribution_major_version in ['20', '22']
+    tags: ['ubuntu20', 'ubuntu22', 'remove']
 
 #===================================================================================================================================
-# RedHat/CentOS 7 - Installation
+# RedHat/CentOS 7 - Installation with rpm command and GPG check skipped
 #===================================================================================================================================
   - name: "Download 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' to '/tmp' when OS is RedHat7 based"
     ansible.builtin.get_url:
@@ -85,10 +85,8 @@
       - ansible_distribution_major_version == '7' and not authcbb7.stat.exists
     tags: ['rhel7', 'install']
 
-  - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' package when OS is RedHat7 based"
-    ansible.builtin.yum:
-      name: /tmp/pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm
-      state: present
+  - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' package using RPM command and skip GPG check"
+    command: rpm -Uvh --nosignature /tmp/pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
