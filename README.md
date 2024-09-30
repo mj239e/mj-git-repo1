@@ -5,7 +5,7 @@
   tasks:
 
 #===================================================================================================================================
-# Ubuntu 22
+# Ubuntu 22 - Installation
 #===================================================================================================================================
   - name: "Download 'attradius-cbb_4.5_amd64.deb' to '/tmp' when OS is Ubuntu 22"
     ansible.builtin.get_url:
@@ -54,7 +54,17 @@
     tags: ['ubuntu22', 'update_raddb']
 
 #===================================================================================================================================
-# RedHat/CentOS 7
+# Ubuntu 22 - Removal
+#===================================================================================================================================
+  - name: "Purge 'attradius-cbb_4.5_amd64.deb' package on Ubuntu 22"
+    command: dpkg --purge attradius-cbb
+    when:
+      - ansible_distribution == 'Ubuntu'
+      - ansible_distribution_major_version == '22'
+    tags: ['ubuntu22', 'remove']
+
+#===================================================================================================================================
+# RedHat/CentOS 7 - Installation
 #===================================================================================================================================
   - name: "Download 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' to '/tmp' when OS is RedHat7 based"
     ansible.builtin.get_url:
@@ -105,7 +115,17 @@
     tags: ['rhel7', 'update_raddb']
 
 #===================================================================================================================================
-# RedHat/CentOS 8
+# RedHat/CentOS 7 - Removal
+#===================================================================================================================================
+  - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' package on RedHat7"
+    command: rpm -e pam_radius_auth_cbb
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '7'
+    tags: ['rhel7', 'remove']
+
+#===================================================================================================================================
+# RedHat/CentOS 8 - Installation
 #===================================================================================================================================
   - name: "Download 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' to '/tmp' when OS is RedHat8 based"
     ansible.builtin.get_url:
@@ -152,3 +172,13 @@
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
     tags: ['rhel8', 'update_raddb']
+
+#===================================================================================================================================
+# RedHat/CentOS 8 - Removal
+#===================================================================================================================================
+  - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' package on RedHat8"
+    command: rpm -e pam_radius_auth_cbb
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
+    tags: ['rhel8', 'remove']
