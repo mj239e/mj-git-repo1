@@ -24,6 +24,14 @@
       - ansible_distribution == 'Ubuntu' and not attradius.stat.exists
     tags: 'install'
 
+  - name: "Install 'attradius-cbb_4.5_amd64.deb' package when OS is Ubuntu"
+    ansible.builtin.apt:
+      deb: /tmp/attradius-cbb_4.5_amd64.deb
+    when:
+      - ansible_distribution == 'Ubuntu'
+      - ansible_distribution_major_version in ['20', '22']
+    tags: 'install'
+
   - name: "Remove 'attradius-cbb_4.5_amd64.deb' from '/tmp' when OS is Ubuntu"
     ansible.builtin.file:
       path: /tmp/attradius-cbb_4.5_amd64.deb
@@ -66,6 +74,15 @@
       - ansible_distribution_major_version == '7' and not authcbb7.stat.exists
     tags: 'install'
 
+  - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' package when OS is RedHat7 based"
+    ansible.builtin.yum:
+      name: /tmp/pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm
+      state: present
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '7'
+    tags: 'install'
+
   - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' from '/tmp' when OS is RedHat"
     ansible.builtin.file:
       path: /tmp/pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm
@@ -106,6 +123,15 @@
     failed_when: 
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8' and not authcbb8.stat.exists
+    tags: 'install'
+
+  - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' package when OS is RedHat8 based"
+    ansible.builtin.yum:
+      name: /tmp/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm
+      state: present
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
     tags: 'install'
 
   - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' from '/tmp' when OS is RedHat"
