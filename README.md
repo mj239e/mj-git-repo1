@@ -86,4 +86,44 @@
       - ansible_distribution_major_version == '7'
     tags: 'update_raddb'
 
-#======
+#===================================================================================================================================
+# RedHat/CentOS 8
+#===================================================================================================================================
+  - name: "Download 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' to '/tmp' when OS is RedHat8 based"
+    ansible.builtin.get_url:
+      url: https://mirrors.it.att.com/pub/custom/SD/nasInstall/radius/mfa/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm
+      dest: /tmp
+      force: true
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
+    tags: 'install'
+
+  - name: "Check '/tmp/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' exists when OS is RedHat8 based"
+    stat:
+      path: /tmp/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm
+    register: authcbb8
+    failed_when: 
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8' and not authcbb8.stat.exists
+    tags: 'install'
+
+  - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' from '/tmp' when OS is RedHat"
+    ansible.builtin.file:
+      path: /tmp/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm
+      state: absent
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
+    tags: 'install'
+
+  - name: "Update /etc/raddb/server file on RedHat8"
+    copy:
+      dest: /etc/raddb/server
+      content: |
+        # Autoconfigured by ping time
+        authgtwy-cbb-uat.is.tci.att.com Nost1k 30
+    when:
+      - ansible_distribution == 'RedHat'
+      - ansible_distribution_major_version == '8'
+    tags: 'update_raddb'
