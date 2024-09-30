@@ -15,6 +15,7 @@
     when:
       - ansible_distribution == 'Ubuntu'
       - ansible_distribution_major_version in ['20', '22']
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'install']
 
   - name: "Check '/tmp/attradius-cbb_4.5_amd64.deb' exists when OS is Ubuntu 20 or 22"
@@ -23,6 +24,8 @@
     register: attradius
     failed_when:
       - ansible_distribution == 'Ubuntu' and not attradius.stat.exists
+    when:
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'install']
 
   - name: "Install 'attradius-cbb_4.5_amd64.deb' package when OS is Ubuntu 20 or 22"
@@ -31,6 +34,7 @@
     when:
       - ansible_distribution == 'Ubuntu'
       - ansible_distribution_major_version in ['20', '22']
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'install']
 
   - name: "Remove 'attradius-cbb_4.5_amd64.deb' from '/tmp' when OS is Ubuntu 20 or 22"
@@ -40,6 +44,7 @@
     when:
       - ansible_distribution == 'Ubuntu'
       - ansible_distribution_major_version in ['20', '22']
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'cleanup']
 
   - name: "Update /etc/raddb/server file on Ubuntu 20 or 22"
@@ -51,6 +56,7 @@
     when:
       - ansible_distribution == 'Ubuntu'
       - ansible_distribution_major_version in ['20', '22']
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'update_raddb']
 
 #===================================================================================================================================
@@ -61,6 +67,7 @@
     when:
       - ansible_distribution == 'Ubuntu'
       - ansible_distribution_major_version in ['20', '22']
+      - "'remove' in ansible_run_tags"  # Only run if remove tag is used
     tags: ['ubuntu20', 'ubuntu22', 'remove']
 
 #===================================================================================================================================
@@ -74,6 +81,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel7', 'install']
 
   - name: "Check '/tmp/pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' exists when OS is RedHat7 based"
@@ -83,6 +91,8 @@
     failed_when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7' and not authcbb7.stat.exists
+    when:
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel7', 'install']
 
   - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' package using RPM command and skip GPG check"
@@ -90,6 +100,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel7', 'install']
 
   - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el7.x86_64.rpm' from '/tmp' when OS is RedHat7"
@@ -99,6 +110,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel7', 'cleanup']
 
   - name: "Update /etc/raddb/server file on RedHat7"
@@ -110,6 +122,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel7', 'update_raddb']
 
 #===================================================================================================================================
@@ -120,6 +133,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '7'
+      - "'remove' in ansible_run_tags"  # Only run if remove tag is used
     tags: ['rhel7', 'remove']
 
 #===================================================================================================================================
@@ -133,6 +147,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel8', 'install']
 
   - name: "Check '/tmp/pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' exists when OS is RedHat8 based"
@@ -142,6 +157,8 @@
     failed_when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8' and not authcbb8.stat.exists
+    when:
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel8', 'install']
 
   - name: "Install 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' using RPM command with signature disabled"
@@ -149,6 +166,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel8', 'install']
 
   - name: "Remove 'pam_radius_auth_cbb-1.4.5-1.el8.x86_64.rpm' from '/tmp' when OS is RedHat8"
@@ -158,6 +176,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel8', 'cleanup']
 
   - name: "Update /etc/raddb/server file on RedHat8"
@@ -169,6 +188,7 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
+      - "'remove' not in ansible_run_tags"  # Skip if remove tag is used
     tags: ['rhel8', 'update_raddb']
 
 #===================================================================================================================================
@@ -179,4 +199,5 @@
     when:
       - ansible_distribution == 'RedHat'
       - ansible_distribution_major_version == '8'
+      - "'remove' in ansible_run_tags"  # Only run if remove tag is used
     tags: ['rhel8', 'remove']
