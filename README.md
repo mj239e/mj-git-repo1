@@ -15,9 +15,9 @@
       set_fact:
         keystone_cleaned: "{{ keystone_output.stdout | trim }}"
 
-    - name: Extract mechanized user using regex (No JSON Parsing)
+    - name: Extract mechanized user using improved regex
       set_fact:
-        mechanized_user: "{{ keystone_cleaned | regex_search('\"user\":\"([^\"]+)\"', '\\1') | default('UNKNOWN') }}"
+        mechanized_user: "{{ keystone_cleaned | regex_search('\"user\"\\s*:\\s*\"([^\"]+)\"', '\\1') | default('UNKNOWN') }}"
         zone: "{{ inventory_hostname.split('.')[0] }}"
 
     - name: Save output to a file
