@@ -11,11 +11,7 @@
       changed_when: false
       failed_when: keystone_output.rc != 0
 
-    - name: Debug raw keystone output
-      debug:
-        msg: "{{ keystone_output.stdout }}"
-
-    - name: Check if output is valid JSON
+    - name: Ensure keystone output is valid JSON
       set_fact:
         keystone_valid_json: "{{ keystone_output.stdout is search('^{.*}$') }}"
 
@@ -24,18 +20,18 @@
         msg: "Keystone output is not valid JSON! Check manually."
       when: not keystone_valid_json
 
+    - name: Clean JSON output to remove extra spaces and newlines
+      set_fact:
+        keystone_cleaned: "{{ keystone_output.stdout | regex_replace('\\n', '') | regex_replace('\\t', '') }}"
+
     - name: Parse JSON Data
       set_fact:
-        keystone_json: "{{ keystone_output.stdout | from_json }}"
+        keystone_json: "{{ keystone_cleaned | from_json }}"
 
     - name: Extract mechanized user and zone
       set_fact:
         mechanized_user: "{{ keystone_json.user | default('UNKNOWN') }}"
         zone: "{{ inventory_hostname.split('.')[0] }}"
-
-    - name: Display results
-      debug:
-        msg: "User: {{ mechanized_user }}, Zone: {{ zone }}"
 
     - name: Save output to a file
       lineinfile:
