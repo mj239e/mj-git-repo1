@@ -11,22 +11,13 @@
       changed_when: false
       failed_when: keystone_output.rc != 0
 
-    - name: Trim extra spaces and ensure clean JSON
+    - name: Trim extra spaces and ensure clean output
       set_fact:
         keystone_cleaned: "{{ keystone_output.stdout | trim }}"
 
-    - name: Debug first 500 characters of output (safe check)
-      debug:
-        msg: "{{ keystone_cleaned[:500] }}"  # Print first 500 chars to confirm it's readable
-
-    - name: Attempt JSON Parsing (Safe Fallback)
+    - name: Extract mechanized user using regex (No JSON Parsing)
       set_fact:
-        keystone_json: "{{ keystone_cleaned | from_json | default('{}') }}"
-      ignore_errors: yes  # Avoid failure if JSON parsing breaks
-
-    - name: Extract mechanized user and zone
-      set_fact:
-        mechanized_user: "{{ keystone_json.user | default('UNKNOWN') }}"
+        mechanized_user: "{{ keystone_cleaned | regex_search('\"user\":\"([^\"]+)\"', '\\1') | default('UNKNOWN') }}"
         zone: "{{ inventory_hostname.split('.')[0] }}"
 
     - name: Save output to a file
