@@ -11,13 +11,16 @@
       changed_when: false
       failed_when: keystone_output.rc != 0
 
-    - name: Trim extra spaces and ensure clean output
-      set_fact:
-        keystone_cleaned: "{{ keystone_output.stdout | trim }}"
+    - name: Extract mechanized user using jq (JSON Query)
+      shell: >-
+        echo '{{ keystone_output.stdout }}' | jq -r '.user'
+      register: mechanized_user_result
+      changed_when: false
+      failed_when: mechanized_user_result.rc != 0
 
-    - name: Extract mechanized user using improved regex
+    - name: Set mechanized user and zone
       set_fact:
-        mechanized_user: "{{ keystone_cleaned | regex_search('\"user\"\\s*:\\s*\"([^\"]+)\"', '\\1') | default('UNKNOWN') }}"
+        mechanized_user: "{{ mechanized_user_result.stdout | default('UNKNOWN') }}"
         zone: "{{ inventory_hostname.split('.')[0] }}"
 
     - name: Save output to a file
