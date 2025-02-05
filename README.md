@@ -11,9 +11,18 @@
       changed_when: false
       failed_when: keystone_output.rc != 0
 
-    - name: Debug keystone output (formatted JSON)
+    - name: Debug raw keystone output
       debug:
-        msg: "{{ keystone_output.stdout | to_nice_json }}"
+        msg: "{{ keystone_output.stdout }}"
+
+    - name: Check if output is valid JSON
+      set_fact:
+        keystone_valid_json: "{{ keystone_output.stdout is search('^{.*}$') }}"
+
+    - name: Fail if JSON is invalid
+      fail:
+        msg: "Keystone output is not valid JSON! Check manually."
+      when: not keystone_valid_json
 
     - name: Parse JSON Data
       set_fact:
