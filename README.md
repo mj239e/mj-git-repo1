@@ -4,16 +4,9 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: Run kubectl command to fetch keystone config
+    - name: Extract mechanized user directly (Final Fix)
       shell: >-
-        kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d
-      register: keystone_output
-      changed_when: false
-      failed_when: keystone_output.rc != 0
-
-    - name: Extract mechanized user using jq (Direct JSON Query)
-      shell: >-
-        echo '{{ keystone_output.stdout }}' | jq -r '.user // "UNKNOWN"'
+        kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 --decode | jq -r '.user'
       register: mechanized_user_result
       changed_when: false
       failed_when: mechanized_user_result.rc != 0
