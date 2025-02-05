@@ -6,7 +6,7 @@
   tasks:
     - name: Extract mechanized user directly (Final Fix)
       shell: >-
-        kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 --decode | jq -r '.user'
+        kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d | jq -r '.. | objects | select(has("user")) | .user'
       register: mechanized_user_result
       changed_when: false
       failed_when: mechanized_user_result.rc != 0
