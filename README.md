@@ -6,17 +6,21 @@
   tasks:
     - name: Extract mechanized user (Logging Output)
       shell: >-
-        (kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d | jq -r '.. | objects | select(has("user")) | .user') 2>&1 | tee /tmp/mech_user_output.log
+        KUBECONFIG=/etc/kubernetes/admin.conf kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d | jq -r '.. | objects | select(has("user")) | .user'
       register: mechanized_user_result
       changed_when: false
       failed_when: mechanized_user_result.rc != 0
 
     - name: Read log file to debug output
+      shell: echo "{{ mechanized_user_result.stdout }}" > /tmp/mech_user_output.log
+      changed_when: false
+
+    - name: Debug command log output
       shell: cat /tmp/mech_user_output.log
       register: command_log
       changed_when: false
 
-    - name: Debug command log output
+    - name: Debug the extracted mechanized user
       debug:
         msg: "{{ command_log.stdout_lines }}"
 
