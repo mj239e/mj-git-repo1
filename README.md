@@ -11,10 +11,18 @@
       changed_when: false
       failed_when: mechanized_user_result.rc != 0
 
+    - name: Debug extracted mechanized user
+      debug:
+        msg: "Extracted User: {{ mechanized_user_result.stdout | default('UNKNOWN') | trim }}"
+
     - name: Set mechanized user and zone
       set_fact:
-        mechanized_user: "{{ mechanized_user_result.stdout | trim }}"
+        mechanized_user: "{{ mechanized_user_result.stdout | default('UNKNOWN') | trim }}"
         zone: "{{ inventory_hostname.split('.')[0] }}"
+
+    - name: Debug mechanized user and zone before writing to file
+      debug:
+        msg: "Host: {{ inventory_hostname }}, User: {{ mechanized_user }}, Zone: {{ zone }}"
 
     - name: Save output to a file
       lineinfile:
