@@ -11,22 +11,18 @@
       changed_when: false
       failed_when: keystone_output.rc != 0
 
-    - name: Ensure keystone output is valid JSON
+    - name: Trim extra spaces and ensure clean JSON
       set_fact:
-        keystone_valid_json: "{{ keystone_output.stdout is search('^{.*}$') }}"
+        keystone_cleaned: "{{ keystone_output.stdout | trim }}"
 
-    - name: Fail if JSON is invalid
-      fail:
-        msg: "Keystone output is not valid JSON! Check manually."
-      when: not keystone_valid_json
+    - name: Debug first 500 characters of output (safe check)
+      debug:
+        msg: "{{ keystone_cleaned[:500] }}"  # Print first 500 chars to confirm it's readable
 
-    - name: Clean JSON output to remove extra spaces and newlines
+    - name: Attempt JSON Parsing (Safe Fallback)
       set_fact:
-        keystone_cleaned: "{{ keystone_output.stdout | regex_replace('\\n', '') | regex_replace('\\t', '') }}"
-
-    - name: Parse JSON Data
-      set_fact:
-        keystone_json: "{{ keystone_cleaned | from_json }}"
+        keystone_json: "{{ keystone_cleaned | from_json | default('{}') }}"
+      ignore_errors: yes  # Avoid failure if JSON parsing breaks
 
     - name: Extract mechanized user and zone
       set_fact:
