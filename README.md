@@ -4,16 +4,21 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: Extract mechanized user directly (Forcing Bash Execution)
+    - name: Extract mechanized user (Logging Output)
       shell: >-
-        bash -c "kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d | jq -r '.. | objects | select(has(\"user\")) | .user'"
+        (kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 -d | jq -r '.. | objects | select(has("user")) | .user') 2>&1 | tee /tmp/mech_user_output.log
       register: mechanized_user_result
       changed_when: false
       failed_when: mechanized_user_result.rc != 0
 
-    - name: Debug full raw output from the command
+    - name: Read log file to debug output
+      shell: cat /tmp/mech_user_output.log
+      register: command_log
+      changed_when: false
+
+    - name: Debug command log output
       debug:
-        msg: "{{ mechanized_user_result.stdout_lines }}"
+        msg: "{{ command_log.stdout_lines }}"
 
     - name: Set mechanized user and zone
       set_fact:
