@@ -1,32 +1,28 @@
 ---
-- name: Fetch Mechanized User and Zone
-  hosts: all
-  become: yes
-  gather_facts: no
+- name: Restart Contrail services on Contrail nodes
+  hosts: contrail_host
+  serial: 1  # Ensures one node at a time
   tasks:
-    - name: Extract mechanized user (Run as Root Subshell)
-      shell: >-
-        sudo -i bash -lc "kubectl -n ucp get secret keystone-etc -o jsonpath='{.data.keystone\.nc\.json}' | base64 --decode | jq -r '.. | objects | select(has(\"user\")) | .user'"
-      register: mechanized_user_result
-      changed_when: false
-      failed_when: mechanized_user_result.rc != 0
 
-    - name: Debug extracted mechanized user
-      debug:
-        msg: "Extracted User: {{ mechanized_user_result.stdout | default('UNKNOWN') | trim }}"
+    - name: Restart Contrail Controller service
+      command: /usr/sbin/service supervisor-config restart
+      register: result
+      changed_when: "'supervisor-config restart' in result.stdout"
 
-    - name: Set mechanized user and zone
-      set_fact:
-        mechanized_user: "{{ mechanized_user_result.stdout | default('UNKNOWN') | trim }}"
-        zone: "{{ inventory_hostname.split('.')[0] }}"
+    - name: Wait for 10 minutes after restarting on a controller node
+      pause:
+        minutes: 10
 
-    - name: Debug mechanized user and zone before writing to file
-      debug:
-        msg: "Host: {{ inventory_hostname }}, User: {{ mechanized_user }}, Zone: {{ zone }}"
+- name: Restart Contrail services on Contrail Analytics nodes
+  hosts: contrail_analytics_host
+  serial: 1  # Ensures one node at a time
+  tasks:
 
-    - name: Save output to a file
-      lineinfile:
-        path: "/home/mj239e/mechanized_users_zones.txt"
-        line: "{{ inventory_hostname }} - User: {{ mechanized_user }}, Zone: {{ zone }}"
-        create: yes
-      delegate_to: localhost
+    - name: Restart Contrail Analytics service
+      command: /usr/sbin/service supervisor-analytics restart
+      register: result
+      changed_when: "'supervisor-analytics restart' in result.stdout"
+
+    - name: Wait for 10 minutes after restarting on an analytics node
+      pause:
+        minutes: 10
